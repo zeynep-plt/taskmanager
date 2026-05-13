@@ -1,9 +1,9 @@
 package com.example.taskmanager.service;
 
-import com.example.taskmanager.entity.Task;
 import com.example.taskmanager.dto.TaskRequest;
+import com.example.taskmanager.entity.Task;
+import com.example.taskmanager.repository.TaskRepository;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,6 @@ public class TaskService {
     }
 
     public Task updateTask(Long id, TaskRequest taskRequest) {
-
         Optional<Task> optionalTask = taskRepository.findById(id);
 
         if (optionalTask.isPresent()) {
@@ -53,7 +52,6 @@ public class TaskService {
             if (taskRequest.getCompleted() != null) {
                 existingTask.setCompleted(taskRequest.getCompleted());
             }
-
 
             return taskRepository.save(existingTask);
         }
@@ -70,5 +68,29 @@ public class TaskService {
         }
 
         return false;
+    }
+
+    public List<Task> getTasksByCompletedStatus(boolean completed) {
+        return taskRepository.findByCompleted(completed);
+    }
+
+    public List<Task> searchTasksByTitle(String title) {
+        return taskRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    public List<Task> filterTasksByTitleAndCompleted(String title, boolean completed) {
+        return taskRepository.findByTitleContainingIgnoreCaseAndCompleted(title, completed);
+    }
+
+    public long countTasksByCompletedStatus(boolean completed) {
+        return taskRepository.countByCompleted(completed);
+    }
+
+    public boolean existsTaskByTitle(String title) {
+        return taskRepository.existsByTitleIgnoreCase(title);
+    }
+
+    public List<Task> getLatestFiveTasks() {
+        return taskRepository.findTop5ByOrderByIdDesc();
     }
 }
